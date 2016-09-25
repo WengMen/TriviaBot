@@ -41,6 +41,7 @@ class TriviaBot(irc.IRCClient):
 
     # manage commands
     def add_command(self, trigger, callback):
+        """Adds a command that can be called by users using ?trigger and runs the function callback."""
         try:
             self.commands[trigger.lower()] = callback
             self.logger.info('[CMD] command \'%s\' registered to %s' % (trigger, callback))
@@ -48,6 +49,7 @@ class TriviaBot(irc.IRCClient):
             self.logger.warn('[CMD] attempted to create command \'%s\': already exists' % trigger)
 
     def del_command(self, trigger):
+        """Deletes a command based on a given trigger."""
         try:
             del self.commands[trigger.lower()]
             self.logger.info('[CMD] command \'%s\' deleted' % trigger)
