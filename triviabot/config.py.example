@@ -9,10 +9,6 @@ channels = [
 nickname = 'Adurna|Trivia'
 realname = 'Adurna Trivia Bot'
 
-# Logging
-logfilename = 'log.txt'
-print_to_console = True
-
 # Q Authentication
 Q_user = ''
 Q_password = ''
