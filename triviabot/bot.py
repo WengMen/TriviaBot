@@ -4,6 +4,8 @@ from twisted.internet import reactor, protocol
 import logging
 import logging.config
 
+import re
+
 
 class TriviaBot(irc.IRCClient):
     """A trivia IRC Bot."""
@@ -12,6 +14,8 @@ class TriviaBot(irc.IRCClient):
         self.nickname = nickname
         self.realname = realname
 
+        self.trigger = '?'
+
         # Q Authentication
         self.q_user = q_user
         self.q_password = q_password
@@ -19,6 +23,9 @@ class TriviaBot(irc.IRCClient):
         # Logging
         logging.config.fileConfig('logging.conf')
         self.logger = logging.getLogger('triviaBot')
+
+        # List of commands
+        self.commands = {}
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
@@ -31,6 +38,21 @@ class TriviaBot(irc.IRCClient):
     def send_msg(self, user, message):
         self.msg(user, message, length=410)
         self.logger.info('[OUT] [%s] %s' % (user, message))
+
+    # manage commands
+    def add_command(self, trigger, callback):
+        try:
+            self.commands[trigger.lower()] = callback
+            self.logger.info('[CMD] command \'%s\' registered to %s' % (trigger, callback))
+        except KeyError:
+            self.logger.warn('[CMD] attempted to create command \'%s\': already exists' % trigger)
+
+    def del_command(self, trigger):
+        try:
+            del self.commands[trigger.lower()]
+            self.logger.info('[CMD] command \'%s\' deleted' % trigger)
+        except KeyError:
+            self.logger.warn('[CMD] attempted to delete command \'%s\': does not exists' % trigger)
 
     # event handling
     def signedOn(self):
@@ -53,8 +75,21 @@ class TriviaBot(irc.IRCClient):
 
     def privmsg(self, user, channel, message):
         """Called when the bot receives a message."""
-        user = user.split('!', 1)[0]
         self.logger.info('[IN] [%s] <%s> %s' % (channel, user, message))
+
+        # parse hostmask TODO MAKE THIS SHIT WORK
+        # user = re.match(r'^(.*?)!(.*?)@(.*?)$', user)  # TODO Better regex-string
+        # nickname, ident, host = user.group(1), user.group(2), user.group(3)
+
+        # check if message is a command
+        if not message.startswith(self.trigger):
+            return
+
+        # handle it
+        # example: '?hello world :)' => command == 'hello', args == ['world', ':)']
+        command, args = message.lower().split()[0][1:], message.lower().split()[1:]
+        if command in self.commands.keys():
+            self.commands[command](user, channel, args)
 
     def userJoined(self, user, channel):
         """Called when a user joins a channel."""
