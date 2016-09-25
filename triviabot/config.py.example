@@ -1,0 +1,18 @@
+# IRC Config
+host = 'irc.quakenet.org'
+port = 6667
+
+channels = [
+    '#lolbottest',
+]
+
+nickname = 'Adurna|Trivia'
+realname = 'Adurna Trivia Bot'
+
+# Logging
+logfilename = 'log.txt'
+print_to_console = True
+
+# Q Authentication
+Q_user = ''
+Q_password = ''
