@@ -1,7 +1,8 @@
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
 
-import logging, logging.config
+import logging
+import logging.config
 
 
 class TriviaBot(irc.IRCClient):
