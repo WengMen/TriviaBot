@@ -3,6 +3,7 @@ from twisted.internet import reactor, protocol
 
 import logging
 import logging.config
+import utilities
 
 import re
 
@@ -14,7 +15,7 @@ class TriviaBot(irc.IRCClient):
         self.nickname = nickname
         self.realname = realname
 
-        self.trigger = '?'
+        self.trigger = config.trigger
 
         # Q Authentication
         self.q_user = q_user
@@ -33,11 +34,11 @@ class TriviaBot(irc.IRCClient):
 
     def connectionLost(self, reason):
         irc.IRCClient.connectionLost(self, reason)
-        self.logger.warn('Disconnected from the server.')
+        self.logger.warn('Disconnected from the server. %s' % reason)
 
-    def send_msg(self, user, message):
-        self.msg(user, message, length=410)
-        self.logger.info('[OUT] [%s] %s' % (user, message))
+    def send_msg(self, entity, message):
+        self.msg(entity, message, length=410)
+        self.logger.info('[OUT] [%s] %s' % (entity, message))
 
     # manage commands
     def add_command(self, trigger, callback):
@@ -63,9 +64,21 @@ class TriviaBot(irc.IRCClient):
         self.send_msg('Q@CServe.quakenet.org', 'AUTH %s %s' % (self.q_user, self.q_password))
         self.mode(self.nickname, True, 'x')
 
+        #setup modules
+        modules = [utilities.make_module(module) for module in config.startup_modules]
+        self.load_modules(modules)
+
         # join channels
         for channel in self.factory.channels:
             self.join(channel)
+
+    def load_modules(self, modules):
+        for module in modules:
+            try:
+                module.on_load(self)
+            except Exception, e:
+                # self.logger.error('[ERROR] Module %s could not be loaded.' % module)
+                self.logger.error(e)
 
     def joined(self, channel):
         """Called when the bot joins a channel."""
@@ -91,7 +104,7 @@ class TriviaBot(irc.IRCClient):
         # example: '?hello world :)' => command == 'hello', args == ['world', ':)']
         command, args = message.lower().split()[0][1:], message.lower().split()[1:]
         if command in self.commands.keys():
-            self.commands[command](user, channel, args)
+            self.commands[command](self, user, channel, args)
 
     def userJoined(self, user, channel):
         """Called when a user joins a channel."""
