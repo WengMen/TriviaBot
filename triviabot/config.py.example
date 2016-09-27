@@ -6,6 +6,10 @@ channels = [
     '#lolbottest',
 ]
 
+trigger = '!'
+
+startup_modules = []
+
 nickname = 'Adurna|Trivia'
 realname = 'Adurna Trivia Bot'
 
