@@ -5,21 +5,19 @@ import logging
 import logging.config
 import utilities
 
-import re
-
 
 class TriviaBot(irc.IRCClient):
     """A trivia IRC Bot."""
 
-    def __init__(self, nickname, realname, q_user, q_password):
-        self.nickname = nickname
-        self.realname = realname
+    def __init__(self, config):
+        self.nickname = config['nickname']
+        self.realname = config['realname']
 
-        self.trigger = config.trigger
+        self.trigger = config['trigger']
 
         # Q Authentication
-        self.q_user = q_user
-        self.q_password = q_password
+        self.q_user = config['q_user']
+        self.q_password = config['q_password']
 
         # Logging
         logging.config.fileConfig('logging.conf')
@@ -65,7 +63,7 @@ class TriviaBot(irc.IRCClient):
         self.mode(self.nickname, True, 'x')
 
         # setup modules
-        modules = [utilities.make_module(module) for module in config.startup_modules]
+        modules = [utilities.make_module(module) for module in config['startup_modules']]
         self.load_modules(modules)
 
         # join channels
@@ -91,10 +89,6 @@ class TriviaBot(irc.IRCClient):
     def privmsg(self, user, channel, message):
         """Called when the bot receives a message."""
         self.logger.info('[IN] [%s] <%s> %s' % (channel, user, message))
-
-        # parse hostmask TODO MAKE THIS SHIT WORK
-        # user = re.match(r'^(.*?)!(.*?)@(.*?)$', user)  # TODO Better regex-string
-        # nickname, ident, host = user.group(1), user.group(2), user.group(3)
 
         # check if message is a command
         if not message.startswith(self.trigger):
@@ -134,15 +128,13 @@ class TriviaBotFactory(protocol.ClientFactory):
     A new protocol instance will be created whenever we connect to the server.
     """
 
-    def __init__(self, channels, nickname, realname, q_user, q_password):
-        self.channels = channels
+    def __init__(self, config):
+        self.config = config
 
-        self.q_user, self.q_password = q_user, q_password
-        self.nickname = nickname
-        self.realname = realname
+        self.channels = config['channels']
 
     def buildProtocol(self, addr):
-        p = TriviaBot(self.nickname, self.realname, self.q_user, self.q_password)
+        p = TriviaBot(self.config)
         p.factory = self
         return p
 
@@ -156,12 +148,12 @@ class TriviaBotFactory(protocol.ClientFactory):
 
 
 if __name__ == '__main__':
-    import config
+    from config import config
     # create factory protocol and application
-    f = TriviaBotFactory(config.channels, config.nickname, config.realname, config.q_user, config.q_password)
+    f = TriviaBotFactory(config)
 
     # connect factory to this host and port
-    reactor.connectTCP(config.host, config.port, f)
+    reactor.connectTCP(config['host'], config['port'], f)
 
     # run bot
     reactor.run()
