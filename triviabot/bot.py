@@ -64,7 +64,7 @@ class TriviaBot(irc.IRCClient):
         self.send_msg('Q@CServe.quakenet.org', 'AUTH %s %s' % (self.q_user, self.q_password))
         self.mode(self.nickname, True, 'x')
 
-        #setup modules
+        # setup modules
         modules = [utilities.make_module(module) for module in config.startup_modules]
         self.load_modules(modules)
 
