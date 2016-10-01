@@ -1,8 +1,11 @@
 def on_load(bot):
     bot.add_command('trivia', trivia)
 
+garbage = None
+
+
 def trivia(bot, user, channel, args):
-    global garbage  ## will be in database later
+    global garbage  # will be in database later
     if not args:
         bot.send_msg(channel, "Trivia question here")
     else:

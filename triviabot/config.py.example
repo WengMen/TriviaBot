@@ -1,18 +1,22 @@
-# IRC Config
-host = 'irc.quakenet.org'
-port = 6667
+config = {
+    # IRC config
+    'host': 'irc.quakenet.org',
+    'port': 6667,
 
-channels = [
-    '#lolbottest',
-]
+    'channels': [
+        '#lolbottest',
+    ],
 
-trigger = '!'
+    'trigger': '!',
 
-startup_modules = []
+    'startup_modules': [
 
-nickname = 'Adurna|Trivia'
-realname = 'Adurna Trivia Bot'
+    ],
 
-# Q Authentication
-Q_user = ''
-Q_password = ''
+    'nickname': 'Adurna|Trivia',
+    'realname': 'Adurna Trivia Bot',
+
+    # Q auth
+    'q_user': '',
+    'q_password': '',
+}
