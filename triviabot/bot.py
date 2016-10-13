@@ -5,9 +5,31 @@ import logging
 import logging.config
 import utilities
 
+import time
+
 
 class TriviaBot(irc.IRCClient):
     """A trivia IRC Bot."""
+
+    class Event:
+        """Events are channel specific commands without arguments that are deactivated if they are triggered once."""
+
+        def __init__(self, trigger, channel, callback):
+            self.trigger = trigger
+            self.callback = callback
+            self.channel = channel
+
+            self.consumed = False
+            self.created = time.time()
+
+        def consume(self, bot, user, channel):
+            """Consumes the event and calls the relevant function."""
+            if self.consumed:
+                return
+
+            self.consumed = True
+            print("consumed")
+            self.callback(bot, user, channel)
 
     def __init__(self, config):
         self.nickname = config['nickname']
@@ -23,8 +45,9 @@ class TriviaBot(irc.IRCClient):
         logging.config.fileConfig('logging.conf')
         self.logger = logging.getLogger('triviaBot')
 
-        # List of commands
+        # List of commands & events
         self.commands = {}
+        self.events = []
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
@@ -54,6 +77,25 @@ class TriviaBot(irc.IRCClient):
             self.logger.info('[CMD] command \'%s\' deleted' % trigger)
         except KeyError:
             self.logger.warn('[CMD] attempted to delete command \'%s\': does not exists' % trigger)
+
+    # manage events
+    def add_event(self, event):
+        """Adds an event listener."""
+        for e in self.events:
+            if event.trigger == e.trigger and event.channel == e.channel:
+                self.logger.warn('[EVT] events must be unique: %s already exists in %s' % (event.trigger, event.channel))
+                raise Exception("Events must be unique.")  # TODO non-generic exception
+
+        self.events.append(event)
+        self.logger.info('[EVT] event \'%s\' registered to %s in %s' % (event.trigger, event.callback, event.channel))
+
+    def del_event(self, event):
+        """Deletes an event."""
+        try:
+            self.events.remove(event)
+            self.logger.info('[EVT] event \'%s\' deleted' % event.trigger)
+        except ValueError:
+            self.logger.warn('[EVT] event %s in %s does not exists' % (event.trigger, event.channel))
 
     # event handling
     def signedOn(self):
@@ -89,6 +131,13 @@ class TriviaBot(irc.IRCClient):
     def privmsg(self, user, channel, message):
         """Called when the bot receives a message."""
         self.logger.info('[IN] [%s] <%s> %s' % (channel, user, message))
+
+        # check if message is an event
+        for event in self.events:
+            if event.trigger == message.lower() and event.channel == channel:
+                event.consume(self, user, channel)
+                self.del_event(event)
+                return
 
         # check if message is a command
         if not message.startswith(self.trigger):

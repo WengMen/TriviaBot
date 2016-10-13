@@ -1,18 +1,27 @@
+import time
+
+
 def on_load(bot):
     bot.add_command('trivia', trivia)
 
-garbage = None
+
+class Question:
+    def __init__(self, question, answer):
+        self.question = question
+        self.answer = answer.lower()
+
+        self.created = time.time()
+
+    def solve_question(self, bot, user, channel):
+        """Called when someone answered correctly."""
+        bot.send_msg(channel, 'Correct answer, %s!' % user)
 
 
 def trivia(bot, user, channel, args):
-    global garbage  # will be in database later
-    if not args:
-        bot.send_msg(channel, "Trivia question here")
-    else:
-        if args[0] == "setgarbage":
-            garbage = args[1]
-            bot.send_msg(channel, 'Garbage has been set to %s' % garbage)
-        elif args[0] == "garbage":
-            bot.send_msg(channel, '%s' % garbage if garbage else "Garbage has not been set.")
-        else:
-            bot.send_msg(channel, 'Shit\'s broke!')
+    """Starts a new round of trivia."""
+    question = Question('Is this real life?', 'This is just fantasy')
+
+    event = bot.Event(question.answer, channel, question.solve_question)
+    bot.add_event(event)
+
+    bot.send_msg(channel, question.question)
