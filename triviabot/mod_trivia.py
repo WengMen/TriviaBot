@@ -1,4 +1,3 @@
-from twisted.words.protocols import irc
 from twisted.internet import reactor
 import time
 
