@@ -10,7 +10,7 @@ config = {
     'trigger': '!',
 
     'startup_modules': [
-
+        'mod_trivia',
     ],
 
     'nickname': 'Adurna|Trivia',
@@ -19,4 +19,7 @@ config = {
     # Q auth
     'q_user': '',
     'q_password': '',
+
+    # API keys
+    'api_key': 'ADD YOUR LEAGUE OF LEGENDS API KEY HERE',
 }

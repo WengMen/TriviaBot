@@ -1,25 +1,28 @@
 import time
+import random
+
+import riotwatcher
+from riotwatcher import RateLimit
+
+from content.questions import question_generators
+from config import config
+
+
+watcher = ''
 
 
 def on_load(bot):
     bot.add_command('trivia', trivia)
 
-
-class Question:
-    def __init__(self, question, answer):
-        self.question = question
-        self.answer = answer.lower()
-
-        self.created = time.time()
-
-    def solve_question(self, bot, user, channel):
-        """Called when someone answered correctly."""
-        bot.send_msg(channel, 'Correct answer, %s!' % user)
+    global watcher
+    watcher = riotwatcher.RiotWatcher(config['api_key'], default_region=riotwatcher.EUROPE_WEST,
+                                      limits=(RateLimit(10, 10), RateLimit(500, 600), ))
 
 
 def trivia(bot, user, channel, args):
     """Starts a new round of trivia."""
-    question = Question('Is this real life?', 'This is just fantasy')
+    global watcher
+    question = random.choice(question_generators)(watcher)
 
     event = bot.Event(question.answer, channel, question.solve_question)
     bot.add_event(event)
