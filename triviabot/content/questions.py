@@ -25,9 +25,9 @@ class Question:
 def champion_from_title(watcher):  # TODO Add caching & Exception handling
     champions = watcher.static_get_champion_list()['data']
 
-    championid = champions[random.choice(champions.keys())]['id']
+    champion_id = champions[random.choice(champions.keys())]['id']
 
-    champion = watcher.static_get_champion(championid)
+    champion = watcher.static_get_champion(champion_id)
     title = str(champion['title'])
     name = str(champion['name'])
 
