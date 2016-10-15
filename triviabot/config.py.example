@@ -11,6 +11,7 @@ config = {
 
     'startup_modules': [
         'mod_trivia',
+        'mod_help',
     ],
 
     'nickname': 'Adurna|Trivia',
