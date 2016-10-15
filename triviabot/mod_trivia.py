@@ -35,4 +35,3 @@ def trivia(bot, user, channel, args):
 
     bot.send_msg(channel, question.question)
     reactor.callLater(duration, question.expire, bot, channel, event)
-    reactor.run()
