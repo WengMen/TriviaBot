@@ -1,6 +1,6 @@
+from twisted.words.protocols import irc
+from twisted.internet import reactor
 import time
-import threading
-
 
 def on_load(bot):
     bot.add_command('trivia', trivia)
@@ -19,7 +19,8 @@ class Question:
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over"""
-        if not event.is_consumed():
+        time.sleep(5.0)
+        if not event.consumed:
             bot.del_event(event)
             bot.send_msg(channel, 'Time is up! The correct answer is \'%s\'' % self.answer)
 
@@ -27,12 +28,11 @@ class Question:
 def trivia(bot, user, channel, args):
     """Starts a new round of trivia."""
     question = Question('Is this real life?', 'This is just fantasy')
-    duration = 5.0 # in seconds
+    duration = 60.0 # in seconds
 
     event = bot.Event(question.answer, channel, question.solve_question)
     bot.add_event(event)
 
     bot.send_msg(channel, question.question)
-
-    timer = threading.Timer(duration, question.expire, args=[bot, channel, event])
-    timer.start()
+    reactor.callLater(duration, question.expire, bot, channel, event)
+    reactor.run()

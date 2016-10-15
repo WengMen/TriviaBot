@@ -30,9 +30,6 @@ class TriviaBot(irc.IRCClient):
             self.consumed = True
             self.callback(bot, user, channel)
 
-        def is_consumed(self):
-            return self.consumed
-
     def __init__(self, config):
         self.nickname = config['nickname']
         self.realname = config['realname']
