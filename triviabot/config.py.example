@@ -7,7 +7,7 @@ config = {
         '#lolbottest',
     ],
 
-    'trigger': '!',
+    'trigger': '?',
 
     'startup_modules': [
         'mod_trivia',
