@@ -1,5 +1,7 @@
 import random
-import threading
+import time
+
+from twisted.internet import reactor
 
 import riotwatcher
 from riotwatcher import RateLimit, EUROPE_WEST
@@ -28,10 +30,14 @@ def trivia(bot, user, channel, args):
 
     # Prepare the question
     question = random.choice(question_generators)(watcher)
+    duration = 20.0  # in seconds
 
     event = bot.Event(question.answer, channel, question.solve_question)
     bot.add_event(event)
 
     # Wait 5s before showing the question
-    timer = threading.Timer(5.0, bot.send_msg, args=[channel, question.question])
-    timer.start()
+    reactor.callLater(5.0, bot.send_msg, channel, question.question)
+
+    # Solve the question if nobody has answered correctly
+    reactor.callLater(duration, question.expire, bot, channel, event)
+

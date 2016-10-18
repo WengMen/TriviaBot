@@ -15,6 +15,13 @@ class Question:
         """Called when someone answered correctly."""
         bot.send_msg(channel, 'Correct answer, %s!' % user)
 
+    def expire(self, bot, channel, event):
+        """Called when the duration of question is over"""
+        time.sleep(5.0)
+        if not event.consumed:
+            bot.del_event(event)
+            bot.send_msg(channel, 'Time is up! The correct answer is \'%s\'' % self.answer)
+
 
 # def example_generator(watcher):
 #     # type: (None) -> Question
