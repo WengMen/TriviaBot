@@ -100,9 +100,15 @@ def champion_from_title(watcher):  # TODO Add caching & Exception handling
 def champion_from_enemytips(watcher):
     champion_id = get_random_champion_id(watcher)
 
-    champion = watcher.static_get_champion(champion_id, champ_data='enemytips')
+    champion = watcher.static_get_champion(champion_id, champ_data='enemytips,spells')
     name = str(champion['name'])
     tips = str(strip_champion_name(' '.join(champion['enemytips']), name))
+    spells = champion['spells']
+
+    for spell in spells:
+        tips = strip_champion_name(tips, spell['name'])
+
+    tips = str(tips)
 
     question = Question('Which champion are you playing against if you should follow these tips? \n%s' % tips, name)
 
@@ -112,9 +118,16 @@ def champion_from_enemytips(watcher):
 def champion_from_allytips(watcher):
     champion_id = get_random_champion_id(watcher)
 
-    champion = watcher.static_get_champion(champion_id, champ_data='allytips')
+    champion = watcher.static_get_champion(champion_id, champ_data='allytips,spells')
     name = str(champion['name'])
     tips = str(strip_champion_name(' '.join(champion['allytips']), name))
+
+    spells = champion['spells']
+
+    for spell in spells:
+        tips = strip_champion_name(tips, spell['name'])
+
+    tips = str(tips)
 
     question = Question('Which champion do you have in your team if you should follow these tips? \n%s' % tips, name)
 
@@ -167,10 +180,10 @@ def champion_from_passive(watcher):
 question_generators = [
     # Pretty name -> function callback
     # example_generator,
-    champion_from_title,
-    champion_from_spell_name,
     spell_name_from_champion,
     spell_name_from_description,
+    champion_from_title,
+    champion_from_spell_name,
     champion_from_enemytips,
     champion_from_allytips,
     champion_from_blurb,
