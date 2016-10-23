@@ -1,5 +1,7 @@
 import imp
 import re
+import logging
+import os
 from HTMLParser import HTMLParser
 
 
@@ -40,3 +42,12 @@ def strip_tags(html):
     s.feed(html)
     return s.get_data()
 # / HTML Tags Stripper
+
+
+# Custom File Handler for Logging.
+class customFileHandler(logging.handlers.TimedRotatingFileHandler):
+    def __init__(self, fileName, when='h',interval=1, backupCount=0, encoding=None, delay=False, utc=False):
+        path = '/'.join(fileName.split('/')[:-1])
+        if not os.path.exists(path):
+            os.mkdir(path)
+        logging.handlers.TimedRotatingFileHandler.__init__(self, fileName, when,interval, backupCount, encoding, delay, utc)
