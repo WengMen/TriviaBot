@@ -1,6 +1,9 @@
 import random
 import time
+import redis
 from triviabot.utilities import strip_tags
+
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
 class Question:
@@ -10,9 +13,20 @@ class Question:
 
         self.created = time.time()
 
-    def solve_question(self, bot, user, channel):
+    def solve_question(self, bot, user, channel, answer):
+        user = user.split('!')[0]
         """Called when someone answered correctly."""
-        bot.send_msg(channel, 'Correct answer, %s!' % user)
+        score = self.update_score(user)
+        bot.send_msg(channel, "Correct answer '%s' by %s! Your new score is %s" % (answer, user, score))
+
+    def update_score(self, user):
+        currentScore = r.get(user)
+        if(currentScore is None):
+            r.set(user, 15)
+        else:
+            r.set(user, int(currentScore)+15)
+
+        return r.get(user)
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over."""
@@ -20,7 +34,6 @@ class Question:
         if not event.consumed:
             bot.del_event(event)
             bot.send_msg(channel, 'Time is up! The correct answer is \'%s\'' % self.answer)
-
 
 # Utility functions
 def get_random_champion_id(watcher):
@@ -65,7 +78,7 @@ def spell_name_from_champion(watcher):
     spell_name = str(spell['name'])
     spell_key = str(spell['key'][-1:])
 
-    question = Question('What\'s the name of %s\'s %s?' % (name, spell_key), spell_name)
+    question = Question('What\'s the name of %s\'s %s?' % (name, spell_key.upper()), spell_name)
 
     return question
 
