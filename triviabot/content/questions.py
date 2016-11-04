@@ -1,10 +1,7 @@
 import random
 import time
-import redis
 from triviabot.utilities import strip_tags
-
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
-
+from triviabot.mod_redis import update_score
 
 class Question:
     def __init__(self, question, answer):
@@ -16,17 +13,8 @@ class Question:
     def solve_question(self, bot, user, channel, answer):
         user = user.split('!')[0]
         """Called when someone answered correctly."""
-        score = self.update_score(user)
+        score = update_score(user)
         bot.send_msg(channel, "Correct answer '%s' by %s! Your new score is %s" % (answer, user, score))
-
-    def update_score(self, user):
-        currentScore = r.get(user)
-        if(currentScore is None):
-            r.set(user, 15)
-        else:
-            r.set(user, int(currentScore)+15)
-
-        return r.get(user)
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over."""
