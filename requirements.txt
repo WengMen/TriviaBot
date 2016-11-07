@@ -1,3 +1,4 @@
 twisted
 requests
 riotwatcher
+redis

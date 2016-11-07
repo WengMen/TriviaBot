@@ -1,7 +1,7 @@
 import random
 import time
-from triviabot.utilities import strip_tags
-
+from triviabot.utilities import strip_tags, separate_name
+from triviabot.mod_redis import update_score
 
 class Question:
     def __init__(self, question, answer):
@@ -10,9 +10,11 @@ class Question:
 
         self.created = time.time()
 
-    def solve_question(self, bot, user, channel):
+    def solve_question(self, bot, user, channel, answer):
         """Called when someone answered correctly."""
-        bot.send_msg(channel, 'Correct answer, %s!' % user)
+        nick, identifier, hostname = separate_name(user)
+        score = update_score(nick)
+        bot.send_msg(channel, 'Correct answer \'%s\' by %s! Your new score is %s.' % (answer, nick, score))
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over."""
@@ -20,7 +22,6 @@ class Question:
         if not event.consumed:
             bot.del_event(event)
             bot.send_msg(channel, 'Time is up! The correct answer is \'%s\'' % self.answer)
-
 
 # Utility functions
 def get_random_champion_id(watcher):
@@ -65,7 +66,7 @@ def spell_name_from_champion(watcher):
     spell_name = str(spell['name'])
     spell_key = str(spell['key'][-1:])
 
-    question = Question('What\'s the name of %s\'s %s?' % (name, spell_key), spell_name)
+    question = Question('What\'s the name of %s\'s %s?' % (name, spell_key.upper()), spell_name)
 
     return question
 

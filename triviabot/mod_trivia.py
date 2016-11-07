@@ -8,7 +8,9 @@ from riotwatcher import RateLimit, EUROPE_WEST
 
 from content.questions import question_generators
 from config import config
+from utilities import separate_name
 from mod_help import add_helptext
+from mod_redis import top, my_score
 
 
 watcher = ''
@@ -25,8 +27,9 @@ def on_load(bot):
 
 def trivia(bot, user, channel, args):
     """Starts a new round of trivia."""
+    nick, identifier, hostname = separate_name(user)
     # Notify the channel that someone started a new round
-    bot.send_msg(channel, '%s has started a new trivia round! Get ready!' % user)
+    bot.send_msg(channel, '%s has started a new trivia round! Get ready!' % nick)
 
     # Prepare the question
     question = random.choice(question_generators)(watcher)
@@ -40,4 +43,3 @@ def trivia(bot, user, channel, args):
 
     # Solve the question if nobody has answered correctly
     reactor.callLater(duration, question.expire, bot, channel, event)
-
