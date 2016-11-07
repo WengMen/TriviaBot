@@ -1,6 +1,6 @@
 import random
 import time
-from triviabot.utilities import strip_tags
+from triviabot.utilities import strip_tags, separate_name
 from triviabot.mod_redis import update_score
 
 class Question:
@@ -11,10 +11,10 @@ class Question:
         self.created = time.time()
 
     def solve_question(self, bot, user, channel, answer):
-        user = user.split('!')[0]
         """Called when someone answered correctly."""
-        score = update_score(user)
-        bot.send_msg(channel, "Correct answer '%s' by %s! Your new score is %s" % (answer, user, score))
+        nick, identifier, hostname = separate_name(user)
+        score = update_score(nick)
+        bot.send_msg(channel, "Correct answer '%s' by %s! Your new score is %s" % (answer, nick, score))
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over."""

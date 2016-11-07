@@ -14,6 +14,12 @@ config = {
         'mod_help',
     ],
 
+     'redis': {
+        'host': 'localhost',
+        'port': 6379,
+        'db': 0
+    },
+
     'nickname': 'Adurna|Trivia',
     'realname': 'Adurna Trivia Bot',
 

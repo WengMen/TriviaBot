@@ -1,6 +1,7 @@
 import redis
+from config import config
 
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
+r = redis.StrictRedis(host=config['redis']['host'], port=config['redis']['port'], db=config['redis']['db'])
 
 def update_score(user):
     currentScore = r.get(user)
@@ -16,7 +17,7 @@ def top(bot, channel):
     print scores
 
 def my_score(bot, user, channel):
-    score = r.get(user);
+    score = r.get(user)
     if(score is None):
         bot.send_msg(channel, "Your score is 0. Everyone point and laugh at %s." % user)
     else:
