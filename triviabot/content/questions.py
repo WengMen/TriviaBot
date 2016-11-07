@@ -1,7 +1,9 @@
 import random
 import time
 from triviabot.utilities import strip_tags, separate_name
-from triviabot.mod_redis import update_score
+
+from triviabot.mod_scores import get_user, create_user, update_score, session_scope
+
 
 class Question:
     def __init__(self, question, answer):
@@ -13,7 +15,17 @@ class Question:
     def solve_question(self, bot, user, channel, answer):
         """Called when someone answered correctly."""
         nick, identifier, hostname = separate_name(user)
-        score = update_score(nick)
+
+        with session_scope() as session:
+            user = get_user(session, nick)
+
+            if not user:
+                create_user(session, nick)
+
+            update_score(session, nick, 15)  # TODO Remove hardcoded score
+
+            score = str(get_user(session, nick).score)
+
         bot.send_msg(channel, 'Correct answer \'%s\' by %s! Your new score is %s.' % (answer, nick, score))
 
     def expire(self, bot, channel, event):
@@ -22,6 +34,7 @@ class Question:
         if not event.consumed:
             bot.del_event(event)
             bot.send_msg(channel, 'Time is up! The correct answer is \'%s\'' % self.answer)
+
 
 # Utility functions
 def get_random_champion_id(watcher):
