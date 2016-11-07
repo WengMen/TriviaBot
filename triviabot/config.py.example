@@ -12,6 +12,7 @@ config = {
     'startup_modules': [
         'mod_trivia',
         'mod_help',
+        'mod_redis'
     ],
 
      'redis': {

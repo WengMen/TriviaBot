@@ -26,19 +26,8 @@ def on_load(bot):
 
 
 def trivia(bot, user, channel, args):
-    nick, identifier, hostname= separate_name(user)
-    if not args:
-        ask_question(bot, nick, channel)
-    elif args[0] == 'top':
-        top(bot, channel)
-    elif args[0] == 'myscore':
-        my_score(bot, nick, channel)
-    else:
-        print 'Shit\'s fucked yo'
-
-
-def ask_question(bot, nick, channel):
     """Starts a new round of trivia."""
+    nick, identifier, hostname= separate_name(user)
     # Notify the channel that someone started a new round
     bot.send_msg(channel, '%s has started a new trivia round! Get ready!' % nick)
 
