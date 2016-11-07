@@ -5,7 +5,7 @@ r = redis.StrictRedis(host=config['redis']['host'], port=config['redis']['port']
 
 def update_score(user):
     currentScore = r.get(user)
-    if(currentScore is None):
+    if currentScore is None:
         r.set(user, 15)
     else:
         r.set(user, int(currentScore)+15)
@@ -13,12 +13,12 @@ def update_score(user):
     return r.get(user)
 
 def top(bot, channel):
-    scores = r.scan(0,None,10);
+    scores = r.scan(0,None,10)
     print scores
 
 def my_score(bot, user, channel):
     score = r.get(user)
-    if(score is None):
+    if score is None:
         bot.send_msg(channel, "Your score is 0. Everyone point and laugh at %s." % user)
     else:
         bot.send_msg(channel, "Your score is %s" % score)

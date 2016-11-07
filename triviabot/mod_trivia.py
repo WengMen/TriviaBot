@@ -27,14 +27,14 @@ def on_load(bot):
 
 def trivia(bot, user, channel, args):
     nick, identifier, hostname= separate_name(user)
-    if ( not args ):
+    if not args:
         ask_question(bot, nick, channel)
-    elif( args[0] == "top" ):
+    elif args[0] == "top":
         top(bot, channel)
-    elif( args[0] == "myscore" ):
+    elif args[0] == "myscore":
         my_score(bot, nick, channel)
     else:
-        print("Shit's fucked yo")
+        print "Shit's fucked yo"
 
 
 def ask_question(bot, nick, channel):
