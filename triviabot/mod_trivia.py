@@ -27,7 +27,7 @@ def on_load(bot):
 
 def trivia(bot, user, channel, args):
     """Starts a new round of trivia."""
-    nick, identifier, hostname= separate_name(user)
+    nick, identifier, hostname = separate_name(user)
     # Notify the channel that someone started a new round
     bot.send_msg(channel, '%s has started a new trivia round! Get ready!' % nick)
 
