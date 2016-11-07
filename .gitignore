@@ -98,3 +98,4 @@ ENV/
 .ropeproject
 /triviabot/config.py
 /logs/
+/triviabot/trivia.db

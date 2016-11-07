@@ -26,7 +26,7 @@ class User(Base):
         return '<User(name=\'%s\', score=\'%s\')>' % (self.name, self.score)
 
 # Init DB
-engine = create_engine('sqlite:///:memory:', echo=True)  # Save in memory for testing purposes
+engine = create_engine('sqlite:///trivia.db', echo=True)  # TODO Move db file path to config
 Base.metadata.create_all(engine)  # TODO Once DB is out of memory, this needs to go into a seperate init_db.py file
 Session = sessionmaker(bind=engine)
 
@@ -61,7 +61,11 @@ def update_score(session, nick, add_score):
 
 # Commands
 def top(bot, user, channel, args):
-    pass
+    with session_scope() as session:
+        users = session.query(User).all()
+
+        for user in users:
+            bot.send_msg(channel, str(user))
 
 
 def score(bot, user, channel, args):
