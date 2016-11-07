@@ -14,7 +14,7 @@ class Question:
         """Called when someone answered correctly."""
         nick, identifier, hostname = separate_name(user)
         score = update_score(nick)
-        bot.send_msg(channel, "Correct answer '%s' by %s! Your new score is %s" % (answer, nick, score))
+        bot.send_msg(channel, 'Correct answer \'%s\' by %s! Your new score is %s' % (answer, nick, score))
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over."""

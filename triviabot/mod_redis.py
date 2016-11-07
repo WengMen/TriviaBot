@@ -19,6 +19,6 @@ def top(bot, channel):
 def my_score(bot, user, channel):
     score = r.get(user)
     if score is None:
-        bot.send_msg(channel, "Your score is 0. Everyone point and laugh at %s." % user)
+        bot.send_msg(channel, 'Your score is 0. Everyone point and laugh at %s.' % user)
     else:
-        bot.send_msg(channel, "Your score is %s" % score)
+        bot.send_msg(channel, 'Your score is %s' % score)
