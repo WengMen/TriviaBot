@@ -4,11 +4,11 @@ from config import config
 r = redis.StrictRedis(host=config['redis']['host'], port=config['redis']['port'], db=config['redis']['db'])
 
 def update_score(user):
-    currentScore = r.get(user)
-    if currentScore is None:
+    current_score = r.get(user)
+    if current_score is None:
         r.set(user, 15)
     else:
-        r.set(user, int(currentScore)+15)
+        r.set(user, int(current_score)+15)
 
     return r.get(user)
 
