@@ -20,11 +20,11 @@ class Question:
             user = db.get_user(session, nick)
 
             if not user:
-                db.create_user(session, nick)
+                user = db.create_user(session, nick)
 
                 db.update_score(session, nick, 15)  # TODO Remove hardcoded score
 
-            score = str(db.get_user(session, nick).score)
+            score = user.score
 
         bot.send_msg(channel, 'Correct answer \'%s\' by %s! Your new score is %s.' % (answer, nick, score))
 

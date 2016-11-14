@@ -45,8 +45,10 @@ def get_user(session, nick):
 
 
 def create_user(session, nick):
-    """Creates a new User and sets his score to 0."""
-    session.add(User(name=nick, score=0))
+    """Creates a new User with score 0 and return it."""
+    user = User(name=nick, score=0)
+    session.add(user)
+    return user
 
 
 def update_score(session, nick, add_score):
