@@ -22,12 +22,12 @@ def top(bot, user, channel, args):
 
         msg = ''
         for i, user in enumerate(users):
-            msg += '#{rank} {nick} ({score}) ||'.format(rank=i+1, nick=user.name, score=user.score)
+            msg += '#{rank} {nick} ({score}) || '.format(rank=i+1, nick=user.name, score=user.score)
 
             if i > n:
                 break
 
-        bot.send_msg(channel, msg[:-2])
+        bot.send_msg(channel, msg[:-3])
 
 
 def score(bot, user, channel, args, self_score=False):
