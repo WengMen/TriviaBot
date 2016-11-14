@@ -26,14 +26,15 @@ class Question:
 
             score = user.score
 
-        bot.send_msg(channel, 'Correct answer \'%s\' by %s! Your new score is %s.' % (answer, nick, score))
+        bot.send_msg(channel, 'Correct answer "{answer}" by {nick}! Your new score is {score}.'
+                     .format(answer=answer, nick=user, score=score))
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over."""
         time.sleep(5.0)
         if not event.consumed:
             bot.del_event(event)
-            bot.send_msg(channel, 'Time is up! The correct answer is \'%s\'' % self.answer)
+            bot.send_msg(channel, 'Time is up! The correct answer is "{answer}"'.format(answer=self.answer))
 
 
 # Utility functions
@@ -64,7 +65,7 @@ def champion_from_spell_name(watcher):
     name = str(champion['name'])
     spell = str(random.choice(champion['spells'])['name'])  # Choose a random spell
 
-    question = Question('Which champion has a skill called "%s"?' % spell, name)
+    question = Question('Which champion has a skill called "{spell}"?'.format(spell=spell), name)
 
     return question
 
@@ -79,7 +80,8 @@ def spell_name_from_champion(watcher):
     spell_name = str(spell['name'])
     spell_key = str(spell['key'][-1:])
 
-    question = Question('What\'s the name of %s\'s %s?' % (name, spell_key.upper()), spell_name)
+    question = Question('What\'s the name of {champion}\'s {spell}?'
+                        .format(champion=name, spell=spell_key.upper()), spell_name)
 
     return question
 
@@ -94,7 +96,8 @@ def spell_name_from_description(watcher):
     spell_name = str(spell['name'])
     spell_description = strip_champion_name(strip_champion_name(str(spell['sanitizedDescription']), name), spell_name)
 
-    question = Question('What\'s the name of the following spell? "%s"' % spell_description, spell_name)
+    question = Question('What\'s the name of the following spell? "{description}"'
+                        .format(description=spell_description), spell_name)
 
     return question
 
@@ -106,7 +109,7 @@ def champion_from_title(watcher):  # TODO Add caching & Exception handling
     title = str(champion['title'])
     name = str(champion['name'])
 
-    question = Question('Which champion has the title "%s"?' % title, name)
+    question = Question('Which champion has the title "{title}"?'.format(title=title), name)
 
     return question
 
@@ -124,7 +127,8 @@ def champion_from_enemytips(watcher):
 
     tips = str(tips)
 
-    question = Question('Which champion are you playing against if you should follow these tips? \n%s' % tips, name)
+    question = Question('Which champion are you playing against if you should follow these tips? \n{tips}'
+                        .format(tips=tips), name)
 
     return question
 
@@ -143,7 +147,8 @@ def champion_from_allytips(watcher):
 
     tips = str(tips)
 
-    question = Question('Which champion do you have in your team if you should follow these tips? \n%s' % tips, name)
+    question = Question('Which champion do you have in your team if you should follow these tips? \n{tips}'
+                        .format(tips=tips), name)
 
     return question
 
@@ -155,7 +160,7 @@ def champion_from_blurb(watcher):
     name = str(champion['name'])
     blurb = str(strip_champion_name(strip_tags(champion['blurb']), name))
 
-    question = Question('Which champion\'s lore is this? %s' % blurb, name)
+    question = Question('Which champion\'s lore is this? {blurb}'.format(blurb=blurb), name)
 
     return question
 
@@ -174,7 +179,7 @@ def champion_from_skins(watcher):
 
     skin_string = strip_champion_name(skin_string[:-2], name)  # remove trailing comma
 
-    question = Question('Which champion\'s skins are these? %s' % skin_string, name)
+    question = Question('Which champion\'s skins are these? {skins}'.format(skins=skin_string), name)
 
     return question
 
@@ -186,7 +191,7 @@ def champion_from_passive(watcher):
     name = str(champion['name'])
     passive = str(strip_champion_name(champion['passive']['sanitizedDescription'], name))
 
-    question = Question('Which champion\'s passive is this? %s' % passive, name)
+    question = Question('Which champion\'s passive is this? {passive}'.format(passive=passive), name)
 
     return question
 
