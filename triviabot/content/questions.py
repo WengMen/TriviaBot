@@ -2,7 +2,7 @@ import random
 import time
 from triviabot.utilities import strip_tags, separate_name
 
-from triviabot.mod_scores import get_user, create_user, update_score, session_scope
+from triviabot.db import get_user, create_user, update_score, session_scope
 
 
 class Question:
