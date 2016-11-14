@@ -50,20 +50,24 @@ def session_scope():
 
 
 def get_user(session, nick):
+    """Returns a User object matching the nickname from the database (case-insensitive)."""
     return session.query(User).filter(User.name.ilike(nick)).first()
 
 
 def create_user(session, nick):
+    """Creates a new User and sets his score to 0."""
     session.add(User(name=nick, score=0))
 
 
 def update_score(session, nick, add_score):
+    """Adds add_score to the score of the User matching nick (case-insensitive)."""
     user = session.query(User).filter(User.name.ilike(nick)).first()
     user.score += add_score
 
 
 # Commands
 def top(bot, user, channel, args):
+    """Displays a list of the top n=args[0] users in the channel."""
     with session_scope() as session:
         if args:
             n = args[0]
@@ -83,6 +87,7 @@ def top(bot, user, channel, args):
 
 
 def score(bot, user, channel, args, self_score=False):
+    """Displays the score of User args[0], or user if no args given or self_score=True in the channel."""
     if not args or self_score:
         nick = separate_name(user)[0]
     else:
