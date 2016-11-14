@@ -22,7 +22,7 @@ class Question:
             if not user:
                 user = db.create_user(session, nick)
 
-                db.update_score(session, nick, 15)  # TODO Remove hardcoded score
+            user.score += 15  # TODO remove hardcoded score per question solved
 
             score = user.score
 
