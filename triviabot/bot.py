@@ -57,7 +57,7 @@ class TriviaBot(irc.IRCClient):
         self.logger.warn('Disconnected from the server. %s' % reason)
 
     def send_msg(self, entity, message):
-        self.msg(entity, message, length=410)
+        self.msg(entity, str(message), length=410)
         self.logger.info('[OUT] [%s] %s' % (entity, message))
 
     # manage commands
@@ -144,7 +144,7 @@ class TriviaBot(irc.IRCClient):
 
         # handle it
         # example: '?hello world :)' => command == 'hello', args == ['world', ':)']
-        command, args = message.lower().split()[0][1:], message.lower().split()[1:]
+        command, args = message.lower().split()[0][1:], message.split()[1:]
         if command in self.commands.keys():
             self.commands[command](self, user, channel, args)
 

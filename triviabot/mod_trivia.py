@@ -1,5 +1,4 @@
 import random
-import time
 
 from twisted.internet import reactor
 
@@ -10,10 +9,8 @@ from content.questions import question_generators
 from config import config
 from utilities import separate_name
 from mod_help import add_helptext
-from mod_redis import top, my_score
 
-
-watcher = ''
+watcher = None
 
 
 def on_load(bot):
@@ -28,6 +25,7 @@ def on_load(bot):
 def trivia(bot, user, channel, args):
     """Starts a new round of trivia."""
     nick, identifier, hostname = separate_name(user)
+
     # Notify the channel that someone started a new round
     bot.send_msg(channel, '%s has started a new trivia round! Get ready!' % nick)
 

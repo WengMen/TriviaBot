@@ -2,3 +2,4 @@ twisted
 requests
 riotwatcher
 redis
+sqlalchemy
