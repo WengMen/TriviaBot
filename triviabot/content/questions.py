@@ -2,7 +2,7 @@ import random
 import time
 from triviabot.utilities import strip_tags, separate_name
 
-from triviabot.db import get_user, create_user, update_score, session_scope
+import triviabot.db as db
 
 
 class Question:
@@ -16,15 +16,15 @@ class Question:
         """Called when someone answered correctly."""
         nick, identifier, hostname = separate_name(user)
 
-        with session_scope() as session:
-            user = get_user(session, nick)
+        with db.session_scope() as session:
+            user = db.get_user(session, nick)
 
             if not user:
-                create_user(session, nick)
+                db.create_user(session, nick)
 
-            update_score(session, nick, 15)  # TODO Remove hardcoded score
+                db.update_score(session, nick, 15)  # TODO Remove hardcoded score
 
-            score = str(get_user(session, nick).score)
+            score = str(db.get_user(session, nick).score)
 
         bot.send_msg(channel, 'Correct answer \'%s\' by %s! Your new score is %s.' % (answer, nick, score))
 
