@@ -58,7 +58,7 @@ def create_user(session, nick):
 
 
 def update_score(session, nick, add_score):
-    user = session.query(User).filter_by(name=nick).first()
+    user = session.query(User).filter(User.name.ilike(nick)).first()
     user.score += add_score
 
 
