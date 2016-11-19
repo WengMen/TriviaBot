@@ -9,6 +9,7 @@ config = {
 
     'trigger': '?',
 
+    'modules_path': 'plugins',
     'startup_modules': [
         'mod_trivia',
         'mod_help',
