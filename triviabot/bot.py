@@ -54,53 +54,58 @@ class TriviaBot(irc.IRCClient):
 
     def connectionLost(self, reason):
         irc.IRCClient.connectionLost(self, reason)
-        self.logger.warn('Disconnected from the server. %s' % reason)
+        self.logger.warn('Disconnected from the server. {reason}'.format(reason=reason))
 
     def send_msg(self, entity, message):
         self.msg(entity, str(message), length=410)
-        self.logger.info('[OUT] [%s] %s' % (entity, message))
+        self.logger.info('[OUT] [{entity}] {message}'.format(entity=entity, message=message))
 
     # manage commands
     def add_command(self, trigger, callback):
         """Adds a command that can be called by users using ?trigger and runs the function callback."""
         try:
             self.commands[trigger.lower()] = callback
-            self.logger.info('[CMD] command \'%s\' registered to %s' % (trigger, callback))
+            self.logger.info('[CMD] command \'{trigger}\' registered to {callback}'
+                             .format(trigger=trigger, callback=callback))
         except KeyError:
-            self.logger.warn('[CMD] attempted to create command \'%s\': already exists' % trigger)
+            self.logger.warn('[CMD] attempted to create command \'{trigger}\': already exists'.format(trigger=trigger))
 
     def del_command(self, trigger):
         """Deletes a command based on a given trigger."""
         try:
             del self.commands[trigger.lower()]
-            self.logger.info('[CMD] command \'%s\' deleted' % trigger)
+            self.logger.info('[CMD] command \'{trigger}\' deleted'.format(trigger=trigger))
         except KeyError:
-            self.logger.warn('[CMD] attempted to delete command \'%s\': does not exists' % trigger)
+            self.logger.warn('[CMD] attempted to delete command \'{trigger}\': does not exists'.format(trigger=trigger))
 
     # manage events
     def add_event(self, event):
         """Adds an event listener."""
         for e in self.events:
             if event.trigger == e.trigger and event.channel == e.channel:
-                self.logger.warn('[EVT] events must be unique: %s already exists in %s' % (event.trigger, event.channel))
-                raise Exception("Events must be unique.")  # TODO non-generic exception
+                self.logger.warn('[EVT] events must be unique: {event} already exists in {channel}'
+                                 .format(event=event.trigger, channel=event.channel))
+                raise Exception('Events must be unique.')  # TODO non-generic exception
 
         self.events.append(event)
-        self.logger.info('[EVT] event \'%s\' registered to %s in %s' % (event.trigger, event.callback, event.channel))
+        self.logger.info('[EVT] event \'{trigger}\' registered to {callback} in {channel}'
+                         .format(trigger=event.trigger, callback=event.callback, channel=event.channel))
 
     def del_event(self, event):
         """Deletes an event."""
         try:
             self.events.remove(event)
-            self.logger.info('[EVT] event \'%s\' deleted' % event.trigger)
+            self.logger.info('[EVT] event \'{trigger}\' deleted'.format(trigger=event.trigger))
         except ValueError:
-            self.logger.warn('[EVT] event %s in %s does not exists' % (event.trigger, event.channel))
+            self.logger.warn('[EVT] event {trigger} in {channel} does not exists'
+                             .format(trigger=event.trigger, channel=event.channel))
 
     # event handling
     def signedOn(self):
         """Called when the bot has successfully signed on to the server."""
         # auth with Q and hide host
-        self.send_msg('Q@CServe.quakenet.org', 'AUTH %s %s' % (self.q_user, self.q_password))
+        self.send_msg('Q@CServe.quakenet.org', 'AUTH {q_user} {q_password}'
+                      .format(q_user=self.q_user, q_password=self.q_password))
         self.mode(self.nickname, True, 'x')
 
         # setup modules
@@ -122,15 +127,15 @@ class TriviaBot(irc.IRCClient):
 
     def joined(self, channel):
         """Called when the bot joins a channel."""
-        self.logger.info('[JOIN] %s' % channel)
+        self.logger.info('[JOIN] {channel}'.format(channel=channel))
 
     def left(self, channel):
         """Called when the bot leaves a channel."""
-        self.logger.info('[PART] %s' % channel)
+        self.logger.info('[PART] {channel}'.format(channel=channel))
 
     def privmsg(self, user, channel, message):
         """Called when the bot receives a message."""
-        self.logger.info('[IN] [%s] <%s> %s' % (channel, user, message))
+        self.logger.info('[IN] [{channel}] <{user}> {message}'.format(channel=channel, user=user, message=message))
 
         # check if message is an event
         for event in self.events:
@@ -151,23 +156,24 @@ class TriviaBot(irc.IRCClient):
 
     def userJoined(self, user, channel):
         """Called when a user joins a channel."""
-        self.logger.info('[IN] [%s] %s joined the channel' % (channel, user))
+        self.logger.info('[IN] [{channel}] {user} joined the channel'.format(channel=channel, user=user))
 
     def userLeft(self, user, channel):
         """Called when a user leaves a channel."""
-        self.logger.info('[IN] [%s] %s left the channel' % (channel, user))
+        self.logger.info('[IN] [{channel}] {user} left the channel'.format(channel=channel, user=user))
 
     def userQuit(self, user, quit_message):
         """Called when a user quits the network."""
-        self.logger.info('[IN] %s quit (%s)' % (user, quit_message))
+        self.logger.info('[IN] {user} quit ({reason})'.format(user=user, reason=quit_message))
 
     def userKicked(self, kickee, channel, kicker, message):
         """Called when a user gets kicked from a channel."""
-        self.logger.info('[IN] [%s] %s has been kicked by %s (%s)' % (channel, kickee, kicker, message))
+        self.logger.info('[IN] [{channel}] {kickee} has been kicked by {kicker} ({reason})'
+                         .format(channel=channel, kickee=kickee, kicker=kicker, reason=message))
 
     def userRenamed(self, oldname, newname):
         """Called when a user changes their nick."""
-        self.logger.info('[IN] %s is now known as %s' % (oldname, newname))
+        self.logger.info('[IN] {oldname} is now known as {newname}'.format(oldname=oldname, newname=newname))
 
 
 class TriviaBotFactory(protocol.ClientFactory):
