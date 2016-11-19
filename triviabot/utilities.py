@@ -5,8 +5,8 @@ import os
 from HTMLParser import HTMLParser
 
 
-def make_module(name):
-    moduleName, fileName, description = imp.find_module(name)
+def make_module(name, module_path):
+    moduleName, fileName, description = imp.find_module(name, [module_path])
     module = imp.load_module(name, moduleName, fileName, description)
     return module
 

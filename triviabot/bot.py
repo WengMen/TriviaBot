@@ -6,7 +6,7 @@ import logging.config
 import utilities
 
 import time
-
+import os
 
 class TriviaBot(irc.IRCClient):
     """A trivia IRC Bot."""
@@ -109,7 +109,8 @@ class TriviaBot(irc.IRCClient):
         self.mode(self.nickname, True, 'x')
 
         # setup modules
-        modules = [utilities.make_module(module) for module in config['startup_modules']]
+        module_path = config['modules_path']
+        modules = [utilities.make_module(module, module_path) for module in config['startup_modules']]
         self.load_modules(modules)
 
         # join channels
