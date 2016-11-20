@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
 
