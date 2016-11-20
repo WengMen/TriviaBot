@@ -8,7 +8,7 @@ from riotwatcher import RateLimit, EUROPE_WEST
 from content.questions import question_generators
 from config import config
 from utilities import separate_name
-from mod_help import add_helptext
+from plugins.mod_help import add_helptext
 
 watcher = None
 

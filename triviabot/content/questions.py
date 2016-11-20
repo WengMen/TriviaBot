@@ -1,9 +1,7 @@
 import random
 import time
-from triviabot.utilities import strip_tags, separate_name
-
-import triviabot.db as db
-
+from utilities import strip_tags, separate_name
+from models import User
 
 class Question:
     def __init__(self, question, answer):
@@ -12,22 +10,13 @@ class Question:
 
         self.created = time.time()
 
-    def solve_question(self, bot, user, channel, answer):
+    def solve_question(self, bot, user, channel, answer, score=15):
         """Called when someone answered correctly."""
         nick, identifier, hostname = separate_name(user)
-
-        with db.session_scope() as session:
-            user = db.get_user(session, nick)
-
-            if not user:
-                user = db.create_user(session, nick)
-
-            db.update_score(session, nick, 15)  # TODO remove hardcoded score per question solved
-
-            score = user.score
-
+        user = User.find_or_create(nick)
+        new_score = user.add_score(score)
         bot.send_msg(channel, 'Correct answer "{answer}" by {nick}! Your new score is {score}.'
-                     .format(answer=answer, nick=user, score=score))
+                     .format(answer=answer, nick=user.name, score=new_score))
 
     def expire(self, bot, channel, event):
         """Called when the duration of question is over."""

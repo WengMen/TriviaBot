@@ -6,23 +6,9 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
-
-class User(Base):
-    __tablename__ = 'users'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    score = Column(Integer)
-
-    def __repr__(self):
-        return '<User(name=\'%s\', score=\'%s\')>' % (self.name, self.score)
-
 # Init DB
-# TODO Move db file path to config, currently shared across all channels
 engine = create_engine('sqlite:///trivia.db', echo=True)
-Base.metadata.create_all(engine)  # TODO Once DB is out of memory, this needs to go into a seperate init_db.py file
-Session = sessionmaker(bind=engine)
-
+Session = sessionmaker(bind=engine, expire_on_commit=False)
 
 # Utility functions
 @contextmanager

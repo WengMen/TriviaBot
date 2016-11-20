@@ -207,6 +207,11 @@ class TriviaBotFactory(protocol.ClientFactory):
 
 if __name__ == '__main__':
     from config import config
+    #
+    # TODO Move db file path to config, currently shared across all channels
+    from models.db import Base, engine
+    Base.metadata.create_all(engine)
+
     # create factory protocol and application
     f = TriviaBotFactory(config)
 
