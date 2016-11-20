@@ -2,6 +2,7 @@
 
 from db import session_scope, Base
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm.exc import NoResultFound
 
 class User(Base):
     __tablename__ = 'users'
@@ -14,13 +15,20 @@ class User(Base):
         return '<User(name=\'%s\', score=\'%s\')>' % (self.name, self.score)
 
     @staticmethod
-    def get_or_create(nickname):
+    def find_or_create(nickname):
         """
             Helper function, gets an user or create it if it doesn't
             exist already in the database.
         """
         with session_scope() as session:
-            return session.query(User).filter(User.name.ilike(nick)).one()
+            try:
+                return session.query(User) \
+                    .filter(User.name.ilike(nickname)) \
+                    .one()
+            except NoResultFound:
+                user = User(name=nickname, score=0)
+                session.add(user)
+                return user
 
     def add_score(self, score):
         """
@@ -29,5 +37,6 @@ class User(Base):
         """
         with session_scope() as session:
             self.score += score
+            session.add(self)
         return self.score
 
