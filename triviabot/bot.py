@@ -9,7 +9,6 @@ import logging.config
 import utilities
 
 import time
-import os
 
 class TriviaBot(irc.IRCClient):
     """A trivia IRC Bot."""
