@@ -1,7 +1,7 @@
 from functools import partial
 
 from utilities import separate_name
-import db
+from models import User
 
 
 def on_load(bot):
@@ -12,23 +12,18 @@ def on_load(bot):
 
 def top(bot, user, channel, args):
     """Displays a list of the top n=args[0] users in the channel."""
-    with db.session_scope() as session:
-        if args:
-            n = args[0]
-        else:
-            n = 10
+    try:
+        max_users = int(args[0])
+    except (ValueError, IndexError) as e:
+        max_users = 10
 
-        users = session.query(db.User).order_by(db.User.score.desc()).all()
-
-        msg = ''
-        for i, user in enumerate(users):
-            msg += '#{rank} {nick} ({score}) || '.format(rank=i+1, nick=user.name, score=user.score)
-
-            if i > n:
-                break
-
-        bot.send_msg(channel, msg[:-3])
-
+    msg = []
+    for rank, user in enumerate(User.top_users(max_users), 1):
+        msg.append('#{rank} {nick} ({score})'.format(
+            rank=rank,
+            nick=user.name,
+            score=user.score))
+    bot.send_msg(channel, ' || '.join(msg))
 
 def score(bot, user, channel, args, self_score=False):
     """Displays the score of User args[0], or user if no args given or self_score=True in the channel."""
@@ -37,10 +32,8 @@ def score(bot, user, channel, args, self_score=False):
     else:
         nick = args[0]
 
-    with db.session_scope() as session:
-        user = db.get_user(session, nick)
-
-        if not user:
-            bot.send_msg(channel, '{nick} has not played trivia yet.'.format(nick=user.name))
-        else:
-            bot.send_msg(channel, '{nick}\'s score is {score}'.format(nick=user.name, score=user.score))
+    user = User.find(nick)
+    if not user:
+        bot.send_msg(channel, '{nick} has not played trivia yet.'.format(nick=user.name))
+    else:
+        bot.send_msg(channel, "{nick}'s score is {score}".format(nick=user.name, score=user.score))

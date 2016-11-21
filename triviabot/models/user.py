@@ -30,6 +30,28 @@ class User(Base):
                 session.add(user)
                 return user
 
+    @staticmethod
+    def find(nickname):
+        """
+            Helper function, returns a User object matching the
+            nickname from the database (case-insensitive).
+        """
+        with session_scope() as session:
+            return session.query(User) \
+                 .filter(User.name.ilike(nick)) \
+                 .first()
+
+    @staticmethod
+    def top_users(max_rank):
+        """
+            Top users by score.
+        """
+        with session_scope() as session:
+            return session.query(User) \
+                .order_by(User.score.desc()) \
+                .limit(max_rank) \
+                .all()
+
     def add_score(self, score):
         """
             Adds score to the score. Automatically wraps the write in
@@ -39,4 +61,3 @@ class User(Base):
             self.score += score
             session.add(self)
         return self.score
-
